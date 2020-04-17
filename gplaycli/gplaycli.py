@@ -17,6 +17,7 @@ see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import re
 import sys
 import site
 import json
@@ -284,6 +285,12 @@ class GPlaycli:
 				failed_downloads.append((item, exc))
 				continue
 
+			additional_data = data_iter['additionalData']
+			splits = data_iter['splits']
+			if(additional_data or splits):
+				download_folder = os.path.join(download_folder, re.sub(".apk$","",filename))
+				os.mkdir(download_folder)
+				
 			filepath = os.path.join(download_folder, filename)
 
 			#if file exists, continue
@@ -291,8 +298,6 @@ class GPlaycli:
 				logger.info("File %s already exists, skipping.", filename)
 				continue
 
-			additional_data = data_iter['additionalData']
-			splits = data_iter['splits']
 			total_size = int(data_iter['file']['total_size'])
 			chunk_size = int(data_iter['file']['chunk_size'])
 			try:
@@ -318,7 +323,7 @@ class GPlaycli:
 					for split in splits:
 						split_total_size = int(split['file']['total_size'])
 						split_chunk_size = int(split['file']['chunk_size'])
-						split_filename = os.path.join(download_folder, split['name'])
+						split_filename = os.path.join(download_folder, split['name']) + ".apk"
 						with open(split_filename, "wb") as fbuffer:
 							bar = util.progressbar(expected_size=split_total_size, hide=not self.progress_bar)
 							for index, chunk in enumerate(split["file"]["data"]):

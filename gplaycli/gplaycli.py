@@ -48,12 +48,13 @@ try:
 except DistributionNotFound:
 	__version__ = 'unknown: gplaycli not installed (version in setup.py)'
 
-logger  = logging.getLogger(__name__)  # default level is WARNING
+logging.basicConfig(level=logging.ERROR) # set default level to ERROR
+logger  = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
 logger.addHandler(handler)
 logger.propagate = False
-
+logger.setLevel(logging.WARNING)
 
 class ERRORS(enum.IntEnum):
 	"""
